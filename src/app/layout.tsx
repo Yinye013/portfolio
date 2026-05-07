@@ -32,9 +32,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${dmSans.variable} ${dmMono.variable} ${bebasNeue.variable} antialiased`}>
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${dmSans.variable} ${dmMono.variable} ${bebasNeue.variable} antialiased`} suppressHydrationWarning>
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   )

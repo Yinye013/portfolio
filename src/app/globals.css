@@ -15,7 +15,7 @@
   --color-accent: #c8a96e;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; }
 
 html {
   background: #0a0a0a;
