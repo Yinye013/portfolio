@@ -13,6 +13,10 @@
   --color-text-secondary: #8a8a80;
   --color-text-muted: #5a5a52;
   --color-accent: #c8a96e;
+
+  --breakpoint-sm: 500px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -32,10 +36,5 @@ html {
 ::-webkit-scrollbar-track { background: #0a0a0a; }
 ::-webkit-scrollbar-thumb { background: #1e1e1a; }
 
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.animate-marquee {
-  animation: marquee 22s linear infinite;
-}
+.clip-hidden { clip-path: inset(0 100% 0 0); }
+.clip-visible { clip-path: inset(0 0% 0 0); }

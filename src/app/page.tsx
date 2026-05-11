@@ -1,3 +1,7 @@
+'use client'
+
+import { useEffect } from 'react'
+import { ScrollTrigger } from '@/lib/gsap'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import Hero from '@/components/sections/Hero'
@@ -17,7 +21,7 @@ function SectionDivider({ number, label }: SectionDividerProps) {
   return (
     <div className="flex items-center gap-3 px-7 py-2 bg-[#080808] border-y border-[#1a1a18]">
       <div className="flex-1 h-px bg-[#1a1a18]" />
-      <span className="font-mono text-[9px] tracking-[0.18em] text-[#2e2e28] uppercase whitespace-nowrap">
+      <span className="font-mono text-[10px] tracking-[0.18em] text-[#2e2e28] uppercase whitespace-nowrap">
         {number} — {label}
       </span>
       <div className="flex-1 h-px bg-[#1a1a18]" />
@@ -26,6 +30,11 @@ function SectionDivider({ number, label }: SectionDividerProps) {
 }
 
 export default function Home() {
+  useEffect(() => {
+    const t = setTimeout(() => ScrollTrigger.refresh(), 100)
+    return () => clearTimeout(t)
+  }, [])
+
   return (
     <>
       <Navbar />

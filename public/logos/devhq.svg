@@ -1,0 +1,8 @@
+<svg viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- "DEV" -->
+  <text x="0" y="30" font-family="'Courier New', monospace" font-weight="700" font-size="26" letter-spacing="2" fill="#c8a96e">DEV</text>
+  <!-- "HQ" -->
+  <text x="82" y="30" font-family="'Courier New', monospace" font-weight="700" font-size="26" letter-spacing="2" fill="#e8e4dc">HQ</text>
+  <!-- underline accent -->
+  <rect x="0" y="34" width="50" height="1.5" fill="#c8a96e" rx="1"/>
+</svg>
