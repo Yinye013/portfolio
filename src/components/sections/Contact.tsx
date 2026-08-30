@@ -90,25 +90,25 @@ export default function Contact() {
     return () => mm.revert();
   }, []);
 
-  const inputClass = "w-full bg-[#0f0f0d] text-[#8a8a80] font-sans text-[11px] py-2 px-3 outline-none focus:border-[#3a3a34] transition-colors";
+  const inputClass = "w-full bg-surface text-text-body font-sans text-[11px] py-2 px-3 outline-none focus:border-border-hover transition-colors";
 
   return (
-    <section id="contact" style={{ borderBottom: "0.5px solid #1e1e1a" }}>
+    <section id="contact" style={{ borderBottom: "0.5px solid var(--c-line)" }}>
       <div className="grid grid-cols-1 md:grid-cols-2">
         {/* Left column */}
-        <div className="flex flex-col justify-center py-10 px-5 sm:px-7" style={{ borderRight: "0.5px solid #1e1e1a" }}>
+        <div className="flex flex-col justify-center py-10 px-5 sm:px-7" style={{ borderRight: "0.5px solid var(--c-line)" }}>
           <div ref={sectionLabelRef} className="flex items-center gap-2 mb-[6px]">
-            <div className="w-[14px] h-px bg-[#5a5a52]" />
-            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-[#5a5a52]">Get in touch</span>
+            <div className="w-[14px] h-px bg-text-muted" />
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-text-muted">Get in touch</span>
           </div>
 
           <h2 ref={headingRef} className="font-display text-[36px] sm:text-[38px] md:text-[42px] tracking-[0.03em] leading-[0.9] mb-[14px]">
-            <span ref={(el) => { headingLineRefs.current[0] = el; }} className="block text-[#e8e4dc]" style={{ clipPath: "inset(0 100% 0 0)" }}>Let&apos;s</span>
-            <span ref={(el) => { headingLineRefs.current[1] = el; }} className="block text-[#2e2e28]" style={{ clipPath: "inset(0 100% 0 0)" }}>build</span>
-            <span ref={(el) => { headingLineRefs.current[2] = el; }} className="block text-[#e8e4dc]" style={{ clipPath: "inset(0 100% 0 0)" }}>something.</span>
+            <span ref={(el) => { headingLineRefs.current[0] = el; }} className="block text-text-primary" style={{ clipPath: "inset(0 100% 0 0)" }}>Let&apos;s</span>
+            <span ref={(el) => { headingLineRefs.current[1] = el; }} className="block text-text-ghost" style={{ clipPath: "inset(0 100% 0 0)" }}>build</span>
+            <span ref={(el) => { headingLineRefs.current[2] = el; }} className="block text-text-primary" style={{ clipPath: "inset(0 100% 0 0)" }}>something.</span>
           </h2>
 
-          <p ref={subRef} className="text-[13px] text-[#5a5a52] leading-[1.7] mb-5 overflow-hidden">
+          <p ref={subRef} className="text-[13px] text-text-muted leading-[1.7] mb-5 overflow-hidden">
             Open to full-time roles, freelance contracts, and interesting collaborations. Don&apos;t hesitate to reach out.
           </p>
 
@@ -116,7 +116,7 @@ export default function Contact() {
             {socials.map((social) => (
               <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label}
                 className="transition-opacity hover:opacity-70 cursor-pointer p-[8px]"
-                style={{ border: "0.5px solid #1e1e1a", color: social.color }}
+                style={{ border: "0.5px solid var(--c-line)", color: social.color }}
               >
                 <social.Icon size={16} />
               </a>
@@ -125,23 +125,23 @@ export default function Contact() {
         </div>
 
         {/* Right column */}
-        <div className="flex flex-col justify-center py-10 px-5 sm:px-7 bg-[#0f0f0d]">
+        <div className="flex flex-col justify-center py-10 px-5 sm:px-7 bg-surface">
           <div className="flex flex-col gap-3">
             <div ref={formGroupsRef} className="flex flex-col gap-3">
               <div className="flex flex-col gap-[5px]" style={{ clipPath: "inset(0 0 100% 0)", opacity: 0 }}>
-                <label htmlFor="contact-name" className="font-mono text-[10px] tracking-[0.14em] uppercase text-[#4a4a44]">Name</label>
-                <input id="contact-name" type="text" placeholder="Your name" className={inputClass} style={{ border: "0.5px solid #1e1e1a" }} />
+                <label htmlFor="contact-name" className="font-mono text-[10px] tracking-[0.14em] uppercase text-text-dim">Name</label>
+                <input id="contact-name" type="text" placeholder="Your name" className={inputClass} style={{ border: "0.5px solid var(--c-line)" }} />
               </div>
               <div className="flex flex-col gap-[5px]" style={{ clipPath: "inset(0 0 100% 0)", opacity: 0 }}>
-                <label htmlFor="contact-email" className="font-mono text-[10px] tracking-[0.14em] uppercase text-[#4a4a44]">Email</label>
-                <input id="contact-email" type="email" placeholder="your@email.com" className={inputClass} style={{ border: "0.5px solid #1e1e1a" }} />
+                <label htmlFor="contact-email" className="font-mono text-[10px] tracking-[0.14em] uppercase text-text-dim">Email</label>
+                <input id="contact-email" type="email" placeholder="your@email.com" className={inputClass} style={{ border: "0.5px solid var(--c-line)" }} />
               </div>
               <div className="flex flex-col gap-[5px]" style={{ clipPath: "inset(0 0 100% 0)", opacity: 0 }}>
-                <label htmlFor="contact-message" className="font-mono text-[10px] tracking-[0.14em] uppercase text-[#4a4a44]">Message</label>
-                <textarea id="contact-message" placeholder="What are you working on?" rows={4} className={`${inputClass} resize-none`} style={{ border: "0.5px solid #1e1e1a" }} />
+                <label htmlFor="contact-message" className="font-mono text-[10px] tracking-[0.14em] uppercase text-text-dim">Message</label>
+                <textarea id="contact-message" placeholder="What are you working on?" rows={4} className={`${inputClass} resize-none`} style={{ border: "0.5px solid var(--c-line)" }} />
               </div>
             </div>
-            <button ref={submitBtnRef} type="button" className="mt-1 w-full md:w-auto inline-block font-mono text-[10px] tracking-[0.14em] uppercase font-medium text-[#0a0a0a] bg-[#c8a96e] py-[10px] px-5 cursor-pointer text-center" style={{ clipPath: "inset(0 100% 0 0)" }}>
+            <button ref={submitBtnRef} type="button" className="mt-1 w-full md:w-auto inline-block font-mono text-[10px] tracking-[0.14em] uppercase font-medium text-background bg-accent py-[10px] px-5 cursor-pointer text-center" style={{ clipPath: "inset(0 100% 0 0)" }}>
               Send message
             </button>
           </div>

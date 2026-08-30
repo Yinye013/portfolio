@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { themeColor } from "@/lib/theme";
 import {
   SiReact, SiNextdotjs, SiVuedotjs, SiAngular, SiGreensock, SiTypescript,
   SiNodedotjs, SiExpress, SiNestjs, SiSpring,
@@ -58,9 +60,13 @@ export default function Skills() {
   const categoryRefs  = useRef<(HTMLDivElement | null)[]>([]);
   const dropZoneRef   = useRef<HTMLDivElement>(null);
   const droppedIconRefs = useRef<(HTMLDivElement | null)[][]>(skillGroups.map(() => []));
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     const mm = gsap.matchMedia();
+    // Resolved once per theme so the tweened label colours follow light/dark.
+    const activeLabel = themeColor("--c-accent");
+    const idleLabel = themeColor("--c-fg-dim");
 
     const pillReveal = () => {
       categoryRefs.current.forEach((container) => {
@@ -87,7 +93,7 @@ export default function Skills() {
             gsap.to(iconEls, {
               opacity: 1, y: 0, stagger: 0.06, ease: "bounce.out", duration: 0.5,
               scrollTrigger: { trigger: categoryRefs.current[gi], start: "top 85%", toggleActions: "play none none none",
-                onEnter: () => { if (categoryEl) gsap.to(categoryEl, { color: "#c8a96e", duration: 0.2 }); },
+                onEnter: () => { if (categoryEl) gsap.to(categoryEl, { color: activeLabel, duration: 0.2 }); },
               },
             });
           }
@@ -115,8 +121,8 @@ export default function Skills() {
       skillGroups.forEach((group, gi) => {
         const categoryEl = categoryRefs.current[gi]?.querySelector(".category-label");
         if (categoryEl) {
-          tl.to(categoryEl, { color: "#c8a96e", duration: 0.01 }, cursor / totalIconSkills);
-          tl.to(categoryEl, { color: "#4a4a44", duration: 0.01 }, (cursor + group.skills.length) / totalIconSkills);
+          tl.to(categoryEl, { color: activeLabel, duration: 0.01 }, cursor / totalIconSkills);
+          tl.to(categoryEl, { color: idleLabel, duration: 0.01 }, (cursor + group.skills.length) / totalIconSkills);
         }
         group.skills.forEach((_, si) => {
           const el = droppedIconRefs.current[gi][si];
@@ -154,47 +160,52 @@ export default function Skills() {
       return () => {};
     });
 
-    return () => {
-      mm.revert();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
-  }, []);
+    // Every trigger here is created inside a matchMedia branch, so mm.revert()
+    // kills them all. Never add ScrollTrigger.getAll().kill() — this effect
+    // re-runs on each theme flip, and it would take down the pinned triggers
+    // owned by Projects and the other sections, which never rebuild them.
+    // Reverting and rebuilding this section changes the page height, so the
+    // other pinned triggers (Projects) need to recompute their start/end.
+    ScrollTrigger.refresh();
+
+    return () => mm.revert();
+  }, [resolvedTheme]);
 
   return (
-    <section ref={sectionRef} id="skills" style={{ borderBottom: "0.5px solid #1e1e1a" }}>
+    <section ref={sectionRef} id="skills" style={{ borderBottom: "0.5px solid var(--c-line)" }}>
       {/* Heading — mobile only (static, no animation refs) */}
       <div className="md:hidden pt-9 px-5 sm:px-7 pb-4">
         <div className="flex items-center gap-2 mb-[6px]">
-          <div className="w-[14px] h-px bg-[#5a5a52]" />
-          <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-[#5a5a52]">What I work with</span>
+          <div className="w-[14px] h-px bg-text-muted" />
+          <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-text-muted">What I work with</span>
         </div>
         <h2 className="font-display text-[28px] tracking-[0.04em] leading-none">
-          <span className="text-[#e8e4dc]">My </span>
-          <span className="text-[#c8a96e]">stack.</span>
+          <span className="text-text-primary">My </span>
+          <span className="text-accent">stack.</span>
         </h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2">
         {/* Left — skill pills (desktop/tablet only) */}
-        <div className="hidden md:block py-9 px-5 sm:px-7" style={{ borderRight: "0.5px solid #1e1e1a" }}>
+        <div className="hidden md:block py-9 px-5 sm:px-7" style={{ borderRight: "0.5px solid var(--c-line)" }}>
           <div ref={sectionLabelRef} className="flex items-center gap-2 mb-[6px]">
-            <div className="w-[14px] h-px bg-[#5a5a52]" />
-            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-[#5a5a52]">What I work with</span>
+            <div className="w-[14px] h-px bg-text-muted" />
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-text-muted">What I work with</span>
           </div>
 
           <h2 ref={headingRef} className="font-display text-[28px] sm:text-[32px] md:text-[36px] tracking-[0.04em] leading-none mb-5">
-            <span className="text-[#e8e4dc]">My </span>
-            <span className="text-[#c8a96e]">stack.</span>
+            <span className="text-text-primary">My </span>
+            <span className="text-accent">stack.</span>
           </h2>
 
           {skillGroups.map((group, i) => (
             <div key={group.category} ref={(el) => { categoryRefs.current[i] = el; }} className="mb-5">
-              <p className="category-label font-mono text-[10px] tracking-[0.16em] uppercase text-[#4a4a44] mb-2 pb-[6px] transition-colors duration-200" style={{ borderBottom: "0.5px solid #1a1a18" }}>
+              <p className="category-label font-mono text-[10px] tracking-[0.16em] uppercase text-text-dim mb-2 pb-[6px] transition-colors duration-200" style={{ borderBottom: "0.5px solid var(--c-line-soft)" }}>
                 {group.category}
               </p>
               <div className="flex flex-wrap gap-[5px]">
                 {group.skills.map((skill) => (
-                  <span key={skill.name} className="skill-pill font-mono text-[10px] tracking-widest uppercase py-1 px-2 border border-[#242420] text-[#5a5a52] bg-transparent" style={{ clipPath: "inset(0 100% 0 0)" }}>
+                  <span key={skill.name} className="skill-pill font-mono text-[10px] tracking-widest uppercase py-1 px-2 border border-border-pill text-text-muted bg-transparent" style={{ clipPath: "inset(0 100% 0 0)" }}>
                     {skill.name}
                   </span>
                 ))}
@@ -207,7 +218,7 @@ export default function Skills() {
         <div ref={dropZoneRef} className="py-9 px-5 sm:px-7 flex flex-col justify-start gap-8">
           {skillGroups.map((group, gi) => (
             <div key={group.category}>
-              <p className="drop-category-label font-mono text-[10px] tracking-[0.16em] uppercase text-[#2a2a26] mb-3 pb-[6px] transition-colors duration-200" style={{ borderBottom: "0.5px solid #1a1a18" }}>
+              <p className="drop-category-label font-mono text-[10px] tracking-[0.16em] uppercase text-text-ghost-soft mb-3 pb-[6px] transition-colors duration-200" style={{ borderBottom: "0.5px solid var(--c-line-soft)" }}>
                 {group.category}
               </p>
               <div className="flex flex-wrap gap-3">
@@ -218,7 +229,7 @@ export default function Skills() {
                       key={skill.name}
                       ref={(el) => { droppedIconRefs.current[gi][si] = el; }}
                       className="p-2"
-                      style={{ border: "0.5px solid #1e1e1a", background: "#0f0f0d", color: skill.color }}
+                      style={{ border: "0.5px solid var(--c-line)", background: "var(--c-bg-surface)", color: skill.color }}
                       title={skill.name}
                     >
                       <Icon size={24} />

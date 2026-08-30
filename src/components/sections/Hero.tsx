@@ -9,7 +9,6 @@ const WorkspaceScene = dynamic(() => import('@/components/WorkspaceScene'), { ss
 const stats = [
   { number: 3, suffix: '+', label: 'Years experience' },
   { number: 15, suffix: '+', label: 'Projects shipped' },
-  { number: 3, suffix: '', label: 'Open source libs' },
 ] as const
 
 export default function Hero() {
@@ -21,10 +20,9 @@ export default function Hero() {
   const statRowRef = useRef<HTMLDivElement>(null)
   const yearsRef = useRef<HTMLSpanElement>(null)
   const projectsRef = useRef<HTMLSpanElement>(null)
-  const ossRef = useRef<HTMLSpanElement>(null)
   const scrollHintRef = useRef<HTMLDivElement>(null)
 
-  const statNumRefs = [yearsRef, projectsRef, ossRef] as const
+  const statNumRefs = [yearsRef, projectsRef] as const
 
   useEffect(() => {
     const mm = gsap.matchMedia()
@@ -104,14 +102,14 @@ export default function Hero() {
   }, [])
 
   return (
-    <section className="relative overflow-hidden border-b-[0.5px] border-[#1e1e1a]" id="hero">
+    <section className="relative overflow-hidden border-b-[0.5px] border-border" id="hero">
       <div className="grid grid-cols-1 lg:grid-cols-2">
         {/* Left column */}
-        <div className="pt-[56px] px-5 sm:px-7 pb-[48px]" style={{ borderRight: '0.5px solid #1e1e1a' }}>
+        <div className="pt-[56px] px-5 sm:px-7 pb-[48px]" style={{ borderRight: '0.5px solid var(--c-line)' }}>
           {/* Eyebrow */}
           <div ref={eyebrowRef} className="flex items-center gap-[10px] mb-5">
-            <div className="w-[28px] h-px bg-[#c8a96e]" />
-            <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#c8a96e]">
+            <div className="w-[28px] h-px bg-accent" />
+            <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-accent">
               Full Stack Engineer
             </span>
           </div>
@@ -120,14 +118,14 @@ export default function Hero() {
           <div className="font-display leading-none tracking-[0.02em]">
             <span
               ref={(el) => { nameLineRefs.current[0] = el }}
-              className="block text-[22px] sm:text-[26px] tracking-[0.12em] uppercase text-[#e8e4dc]/20 mb-1"
+              className="block text-[22px] sm:text-[26px] tracking-[0.12em] uppercase text-text-primary/20 mb-1"
               style={{ clipPath: 'inset(0 100% 0 0)' }}
             >
               Onyinyechukwu
             </span>
             <span
               ref={(el) => { nameLineRefs.current[1] = el }}
-              className="block text-[22vw] sm:text-[56px] md:text-[64px] lg:text-[80px] leading-[0.88] uppercase text-[#e8e4dc]"
+              className="block text-[22vw] sm:text-[56px] md:text-[64px] lg:text-[80px] leading-[0.88] uppercase text-text-primary"
               style={{ clipPath: 'inset(0 100% 0 0)' }}
             >
               Adesanya
@@ -135,12 +133,12 @@ export default function Hero() {
           </div>
 
           {/* Role */}
-          <p ref={roleRef} className="font-mono text-[11px] tracking-[0.18em] uppercase text-[#6a6a60] mt-[10px] mb-7">
+          <p ref={roleRef} className="font-mono text-[11px] tracking-[0.18em] uppercase text-text-nav mt-[10px] mb-7">
             Building things for the web — front to back
           </p>
 
           {/* Bio */}
-          <p ref={bioRef} className="text-[13px] text-[#8a8a80] leading-[1.7] max-w-[360px] mb-8">
+          <p ref={bioRef} className="text-[13px] text-text-body leading-[1.7] max-w-[360px] mb-8">
             I design and engineer scalable, performant digital products. From pixel-perfect UIs to robust backend systems — I bring ideas to life end-to-end.
           </p>
 
@@ -149,26 +147,26 @@ export default function Hero() {
             <button
               ref={(el) => { btnRefs.current[0] = el }}
               onClick={() => document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' })}
-              className="font-mono text-[10px] tracking-[0.14em] uppercase font-medium bg-[#c8a96e] text-[#0a0a0a] py-[10px] px-5 cursor-pointer hover:bg-[#d4b87a] transition-colors duration-150"
+              className="font-mono text-[10px] tracking-[0.14em] uppercase font-medium bg-accent text-background py-[10px] px-5 cursor-pointer hover:bg-accent-hover transition-colors duration-150"
             >
               View Projects
             </button>
             <button
               ref={(el) => { btnRefs.current[1] = el }}
-              className="font-mono text-[10px] tracking-[0.14em] uppercase bg-transparent text-[#6a6a60] border-[0.5px] border-[#2e2e28] py-[10px] px-5 cursor-pointer hover:text-[#e8e4dc] hover:border-[#6a6a60] transition-all duration-150"
+              className="font-mono text-[10px] tracking-[0.14em] uppercase bg-transparent text-text-nav border-[0.5px] border-border-strong py-[10px] px-5 cursor-pointer hover:text-text-primary hover:border-text-nav transition-all duration-150"
             >
               Download CV
             </button>
           </div>
 
           {/* Stats */}
-          <div ref={statRowRef} className="border-t-[0.5px] border-[#1e1e1a] pt-8 mt-8 grid grid-cols-3 gap-4 sm:flex sm:gap-8">
+          <div ref={statRowRef} className="border-t-[0.5px] border-border pt-8 mt-8 grid grid-cols-2 gap-6 sm:flex sm:gap-10">
             {stats.map((stat, i) => (
               <div key={stat.label}>
-                <div className="font-display text-[22px] sm:text-[28px] leading-none tracking-[0.04em] text-[#e8e4dc]">
+                <div className="font-display text-[22px] sm:text-[28px] leading-none tracking-[0.04em] text-text-primary">
                   <span ref={statNumRefs[i]}>0{stat.suffix}</span>
                 </div>
-                <div className="font-mono text-[9px] sm:text-[10px] tracking-[0.16em] uppercase text-[#4a4a44] mt-1">
+                <div className="font-mono text-[9px] sm:text-[10px] tracking-[0.16em] uppercase text-text-dim mt-1">
                   {stat.label}
                 </div>
               </div>
@@ -177,15 +175,15 @@ export default function Hero() {
         </div>
 
         {/* Right column — Three.js workspace (hidden on mobile) */}
-        <div className="hidden sm:block relative bg-[#080806]" style={{ minHeight: '280px' }}>
+        <div className="hidden sm:block relative bg-scene" style={{ minHeight: '280px' }}>
           <WorkspaceScene />
           <div
             ref={scrollHintRef}
             onClick={() => document.getElementById('marquee')?.scrollIntoView({ behavior: 'smooth' }) ?? document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
             className="absolute right-7 bottom-7 flex flex-col items-center gap-[6px] cursor-pointer group"
           >
-            <div className="w-px h-10 bg-gradient-to-b from-[#c8a96e] to-transparent group-hover:from-[#d4b87a] transition-colors duration-150" />
-            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-[#4a4a44] group-hover:text-[#6a6a60] transition-colors duration-150" style={{ writingMode: 'vertical-rl' }}>
+            <div className="w-px h-10 bg-gradient-to-b from-accent to-transparent group-hover:from-accent-hover transition-colors duration-150" />
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-text-dim group-hover:text-text-nav transition-colors duration-150" style={{ writingMode: 'vertical-rl' }}>
               Scroll
             </span>
           </div>

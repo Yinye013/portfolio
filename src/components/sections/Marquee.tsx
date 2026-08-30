@@ -45,12 +45,12 @@ export default function Marquee() {
   }, [])
 
   return (
-    <div id="marquee" className="overflow-hidden py-[10px] bg-[#080808] border-t-[0.5px] border-b-[0.5px] border-[#1e1e1a]">
+    <div id="marquee" className="overflow-hidden py-[10px] bg-bg-deep border-t-[0.5px] border-b-[0.5px] border-border">
       <div ref={trackRef} className="flex w-max">
         {doubled.map((item, i) => (
           <span
             key={i}
-            className="flex items-center font-mono text-[8px] sm:text-[10px] tracking-[0.22em] uppercase text-[#2e2e28] px-4 sm:px-6 border-r-[0.5px] border-[#1e1e1a] whitespace-nowrap"
+            className="flex items-center font-mono text-[8px] sm:text-[10px] tracking-[0.22em] uppercase text-text-ghost px-4 sm:px-6 border-r-[0.5px] border-border whitespace-nowrap"
           >
             {item}
           </span>

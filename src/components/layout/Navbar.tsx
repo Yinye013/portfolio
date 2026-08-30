@@ -1,7 +1,10 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useTheme } from 'next-themes'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
+import { themeColor } from '@/lib/theme'
+import ThemeToggle from '@/components/ThemeToggle'
 import { SiGithub, SiX } from 'react-icons/si'
 import { FaLinkedinIn } from 'react-icons/fa'
 
@@ -19,8 +22,8 @@ function handleNavClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
 function Logo() {
   return (
     <div className="font-display text-[30px] tracking-[0.08em] leading-none">
-      <span className="text-[#e8e4dc]">OA</span>
-      <span className="text-[#b4ac9c]">.</span>
+      <span className="text-text-primary">OA</span>
+      <span style={{ color: 'var(--c-fg-logo-dot)' }}>.</span>
     </div>
   )
 }
@@ -33,7 +36,7 @@ function DesktopLinks() {
           key={link}
           href={`#${link.toLowerCase()}`}
           onClick={(e) => handleNavClick(e, link.toLowerCase())}
-          className="font-mono text-[12px] tracking-[0.14em] uppercase text-[#6a6a60] hover:text-[#e8e4dc] transition-colors duration-150"
+          className="font-mono text-[12px] tracking-[0.14em] uppercase text-text-nav hover:text-text-primary transition-colors duration-150"
         >
           {link}
         </a>
@@ -50,7 +53,7 @@ function TabletLinks() {
           key={link}
           href={`#${link.toLowerCase()}`}
           onClick={(e) => handleNavClick(e, link.toLowerCase())}
-          className="font-mono text-[9px] tracking-[0.14em] uppercase text-[#6a6a60] hover:text-[#e8e4dc] transition-colors duration-150"
+          className="font-mono text-[9px] tracking-[0.14em] uppercase text-text-nav hover:text-text-primary transition-colors duration-150"
         >
           {link}
         </a>
@@ -63,7 +66,7 @@ function HireMe({ className = '' }: { className?: string }) {
   return (
     <a
       href="mailto:yinadesanya@gmail.com"
-      className={`font-mono text-[12px] tracking-[0.12em] uppercase text-[#c8a96e] border border-[#c8a96e44] py-[6px] px-[14px] bg-transparent hover:bg-[#c8a96e] hover:text-[#0a0a0a] transition-colors duration-150 ${className}`}
+      className={`font-mono text-[12px] tracking-[0.12em] uppercase text-accent border border-accent-border py-[6px] px-[14px] bg-transparent hover:bg-accent hover:text-background transition-colors duration-150 ${className}`}
     >
       Hire me
     </a>
@@ -76,7 +79,10 @@ function NavContent() {
       <Logo />
       <DesktopLinks />
       <TabletLinks />
-      <HireMe className="hidden md:inline-flex" />
+      <div className="flex items-center gap-3">
+        <ThemeToggle />
+        <HireMe className="hidden md:inline-flex" />
+      </div>
     </>
   )
 }
@@ -86,17 +92,40 @@ export default function Navbar() {
   const overlayRef = useRef<HTMLDivElement>(null)
   const overlayLinksRef = useRef<(HTMLAnchorElement | null)[]>([])
   const [isOpen, setIsOpen] = useState(false)
+  const { resolvedTheme } = useTheme()
 
   useEffect(() => {
     const nav = fixedNavRef.current
     if (!nav) return
 
-    gsap.set(nav, { backgroundColor: 'transparent', borderBottomColor: 'transparent' })
+    // GSAP tweens concrete colours, so the palette has to be resolved rather
+    // than passed as var(). Resolve it inside onEnter, not out here: this
+    // effect re-runs on a theme flip, but next-themes writes the class on
+    // <html> in the same commit that schedules the effect, so a read at this
+    // point still returns the outgoing theme's values.
+    // On a theme flip this effect re-runs while the user may already be
+    // scrolled past the trigger point, where onEnter will not fire again. Paint
+    // the correct state for the current scroll position directly, on the next
+    // frame so the new class is on <html> before the palette is read.
+    const raf = requestAnimationFrame(() => {
+      const scrolled = window.scrollY >= 60
+      gsap.set(nav, {
+        backgroundColor: scrolled ? themeColor('--c-bg') : 'transparent',
+        borderBottomColor: scrolled ? themeColor('--c-line') : 'transparent',
+        opacity: scrolled ? 1 : 0,
+        y: scrolled ? 0 : -8,
+        pointerEvents: scrolled ? 'auto' : 'none',
+      })
+    })
 
     ScrollTrigger.create({
       start: 60,
       onEnter: () => {
-        gsap.to(nav, { backgroundColor: '#0a0a0a', borderBottomColor: '#1e1e1a', duration: 0.3 })
+        gsap.to(nav, {
+          backgroundColor: themeColor('--c-bg'),
+          borderBottomColor: themeColor('--c-line'),
+          duration: 0.3,
+        })
         gsap.to(nav, { opacity: 1, y: 0, pointerEvents: 'auto', duration: 0.3 })
       },
       onLeaveBack: () => {
@@ -106,11 +135,12 @@ export default function Navbar() {
     })
 
     return () => {
+      cancelAnimationFrame(raf)
       ScrollTrigger.getAll()
         .filter((t) => !t.vars.trigger)
         .forEach((t) => t.kill())
     }
-  }, [])
+  }, [resolvedTheme])
 
   useEffect(() => {
     const overlay = overlayRef.current
@@ -147,7 +177,7 @@ export default function Navbar() {
   return (
     <>
       {/* Static nav (top of page) */}
-      <nav className="flex items-center justify-between py-[18px] px-7 border-b-[0.5px] border-[#1e1e1a] bg-[#0a0a0a]">
+      <nav className="flex items-center justify-between py-[18px] px-7 border-b-[0.5px] border-border bg-background">
         <NavContent />
         {/* Hamburger */}
         <button
@@ -156,7 +186,7 @@ export default function Navbar() {
           aria-label="Open menu"
         >
           {[0, 1, 2].map((i) => (
-            <span key={i} className="block w-5 h-px bg-[#6a6a60]" />
+            <span key={i} className="block w-5 h-px bg-text-nav" />
           ))}
         </button>
       </nav>
@@ -174,7 +204,7 @@ export default function Navbar() {
           aria-label="Open menu"
         >
           {[0, 1, 2].map((i) => (
-            <span key={i} className="block w-5 h-px bg-[#6a6a60]" />
+            <span key={i} className="block w-5 h-px bg-text-nav" />
           ))}
         </button>
       </nav>
@@ -182,15 +212,15 @@ export default function Navbar() {
       {/* Full-screen overlay */}
       <div
         ref={overlayRef}
-        className="fixed inset-0 z-[60] bg-[#000] flex-col"
+        className="fixed inset-0 z-[60] bg-overlay flex-col"
         style={{ display: 'none' }}
       >
         {/* Overlay top bar */}
-        <div className="flex items-center justify-between py-[18px] px-7 border-b border-[#111]">
+        <div className="flex items-center justify-between py-[18px] px-7 border-b border-border-faint">
           <Logo />
           <button
             onClick={() => setIsOpen(false)}
-            className="font-mono text-[9px] tracking-[0.14em] uppercase text-[#4a4a44] cursor-pointer"
+            className="font-mono text-[9px] tracking-[0.14em] uppercase text-text-dim cursor-pointer"
           >
             ✕ Close
           </button>
@@ -204,8 +234,8 @@ export default function Navbar() {
               ref={(el) => { overlayLinksRef.current[i] = el }}
               href={`#${link.toLowerCase()}`}
               onClick={(e) => { e.preventDefault(); closeAndScroll(link.toLowerCase()) }}
-              className={`font-display leading-none py-[10px] border-b border-[#111] text-[42px] sm:text-[52px] ${
-                link === 'Contact' ? 'text-[#c8a96e]' : 'text-[#1e1e1e] hover:text-[#e8e4dc]'
+              className={`font-display leading-none py-[10px] border-b border-border-faint text-[42px] sm:text-[52px] ${
+                link === 'Contact' ? 'text-accent' : 'text-text-outline hover:text-text-primary'
               } transition-colors duration-150`}
             >
               {link}
@@ -214,7 +244,7 @@ export default function Navbar() {
         </div>
 
         {/* Overlay bottom bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[#111]">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-border-faint">
           <div className="flex gap-2">
             {[
               { href: 'https://github.com/Yinye013', Icon: SiGithub, label: 'GitHub' },
@@ -227,16 +257,19 @@ export default function Navbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="font-mono text-[8px] tracking-[0.1em] uppercase text-[#2e2e28] p-[6px]"
-                style={{ border: '0.5px solid #1e1e1a' }}
+                className="font-mono text-[8px] tracking-[0.1em] uppercase text-text-ghost p-[6px]"
+                style={{ border: '0.5px solid var(--c-line)' }}
               >
                 <Icon size={12} />
               </a>
             ))}
           </div>
-          <span className="font-mono text-[8px] tracking-[0.1em] text-[#2e2e28]">
-            yinadesanya@gmail.com
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-[8px] tracking-[0.1em] text-text-ghost">
+              yinadesanya@gmail.com
+            </span>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </>

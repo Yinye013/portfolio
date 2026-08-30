@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="Project screenshot placeholder">
+  <rect width="800" height="500" fill="#151513"/>
+  <g fill="none" stroke="#2a2a26" stroke-width="1">
+    <path d="M0 125h800M0 250h800M0 375h800M200 0v500M400 0v500M600 0v500"/>
+  </g>
+  <rect x="300" y="190" width="200" height="120" fill="none" stroke="#c8a96e" stroke-width="1.5"/>
+  <text x="400" y="258" text-anchor="middle" font-family="monospace" font-size="18" letter-spacing="4" fill="#c8a96e">04</text>
+</svg>

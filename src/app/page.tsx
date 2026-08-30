@@ -19,12 +19,12 @@ interface SectionDividerProps {
 
 function SectionDivider({ number, label }: SectionDividerProps) {
   return (
-    <div className="flex items-center gap-3 px-7 py-2 bg-[#080808] border-y border-[#1a1a18]">
-      <div className="flex-1 h-px bg-[#1a1a18]" />
-      <span className="font-mono text-[10px] tracking-[0.18em] text-[#2e2e28] uppercase whitespace-nowrap">
+    <div className="flex items-center gap-3 px-7 py-2 bg-bg-deep border-y border-border-soft">
+      <div className="flex-1 h-px bg-border-soft" />
+      <span className="font-mono text-[10px] tracking-[0.18em] text-text-ghost uppercase whitespace-nowrap">
         {number} — {label}
       </span>
-      <div className="flex-1 h-px bg-[#1a1a18]" />
+      <div className="flex-1 h-px bg-border-soft" />
     </div>
   )
 }

@@ -6,22 +6,6 @@ import { gsap } from '@/lib/gsap'
 
 const experiences = [
   {
-    role: 'Product Engineer',
-    company: 'Product Studio HQ',
-    period: 'Sep 2025 — Present',
-    location: 'Lagos, Nigeria',
-    logoInitials: 'PS',
-    logoUrl: '/logos/productstudio.svg',
-    logoInvert: true,
-    logoWidth: 120,
-    logoHeight: 32,
-    bullets: [
-      'Building product-focused web applications using Next.js and React, with a strong emphasis on frontend best practices.',
-      'Implementing clean, maintainable component architecture with a focus on performance and user experience.',
-      'Collaborating closely with product and design teams to translate requirements into high-quality interfaces.',
-    ],
-  },
-  {
     role: 'Fullstack Developer',
     company: 'Union Systems Limited',
     period: 'Jul 2025 — Present',
@@ -35,6 +19,22 @@ const experiences = [
       'Implemented lazy loading and optimized change detection strategies, reducing page load times and improving overall application performance.',
       'Translated wireframes and design prototypes into functional, high-performance interfaces in close collaboration with UX/UI designers.',
       'Integrated RESTful APIs using Angular\'s HttpClient and RxJS observables for robust, reactive data handling.',
+    ],
+  },
+  {
+    role: 'Product Engineer',
+    company: 'Product Studio HQ',
+    period: 'Sep 2025 — Present',
+    location: 'Lagos, Nigeria',
+    logoInitials: 'PS',
+    logoUrl: '/logos/productstudio.svg',
+    logoInvert: true,
+    logoWidth: 120,
+    logoHeight: 32,
+    bullets: [
+      'Building product-focused web applications using Next.js and React, with a strong emphasis on frontend best practices.',
+      'Implementing clean, maintainable component architecture with a focus on performance and user experience.',
+      'Collaborating closely with product and design teams to translate requirements into high-quality interfaces.',
     ],
   },
   {
@@ -177,11 +177,11 @@ export default function Experience() {
       {/* Header */}
       <div className="pt-9 px-5 sm:px-7">
         <div ref={sectionLabelRef} className="flex items-center gap-2 mb-[6px]">
-          <div className="w-[14px] h-px bg-[#5a5a52]" />
-          <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-[#5a5a52]">Where I&apos;ve worked</span>
+          <div className="w-[14px] h-px bg-text-muted" />
+          <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-text-muted">Where I&apos;ve worked</span>
         </div>
         <h2 ref={headingRef} className="font-display text-[28px] sm:text-[32px] md:text-[36px] tracking-[0.04em] leading-none mb-6">
-          <span className="text-[#e8e4dc]">Experience</span>
+          <span className="text-text-primary">Experience</span>
           <span className="text-accent">.</span>
         </h2>
       </div>
@@ -191,7 +191,7 @@ export default function Experience() {
         {experiences.map((exp, idx) => (
           <div
             key={exp.company}
-            className="relative overflow-hidden bg-[#0c0c0a] p-[14px] sm:p-[18px] border border-border/50"
+            className="relative overflow-hidden bg-raised p-[14px] sm:p-[18px] border border-border/50"
             style={{ clipPath: 'inset(0 0 100% 0)' }}
           >
             {/* Top accent line */}
@@ -210,19 +210,19 @@ export default function Experience() {
                 />
               </div>
               <div className="sm:mt-3">
-                <p className="font-sans text-[12px] font-medium text-[#c8c4bc] mb-[2px]">{exp.role}</p>
+                <p className="font-sans text-[12px] font-medium text-text-role mb-[2px]">{exp.role}</p>
                 <p className="font-mono text-[12px] tracking-[0.12em] uppercase text-accent mb-[3px]">{exp.company}</p>
               </div>
             </div>
 
-            <p className="font-mono text-[11px] tracking-widest uppercase text-[#3a3a34] mb-[2px]">{exp.period}</p>
-            <p className="font-mono text-[11px] tracking-widest uppercase text-[#3a3a34] mb-3">{exp.location}</p>
+            <p className="font-mono text-[11px] tracking-widest uppercase text-text-faint mb-[2px]">{exp.period}</p>
+            <p className="font-mono text-[11px] tracking-widest uppercase text-text-faint mb-3">{exp.location}</p>
 
             <ul className="flex flex-col gap-[6px]">
               {exp.bullets.map((bullet, i) => (
                 <li key={i} className="flex gap-2">
                   <span className="text-accent mt-[2px] shrink-0 text-[10px]">›</span>
-                  <span className="font-mono text-[12px] leading-[1.7] text-[#4a4a44]">{bullet}</span>
+                  <span className="font-mono text-[12px] leading-[1.7] text-text-dim">{bullet}</span>
                 </li>
               ))}
             </ul>

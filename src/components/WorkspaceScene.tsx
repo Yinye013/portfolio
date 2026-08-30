@@ -1,10 +1,13 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { useTheme } from 'next-themes'
 import * as THREE from 'three'
 
 export default function WorkspaceScene() {
   const mountRef = useRef<HTMLDivElement>(null)
+
+  const { resolvedTheme } = useTheme()
 
   useEffect(() => {
     const mount = mountRef.current
@@ -24,9 +27,13 @@ export default function WorkspaceScene() {
     camera.position.set(0, 4.2, 9)
     camera.lookAt(0, 1.2, 0)
 
+    // The wireframe sits on a transparent canvas over the themed section
+    // background, so the two recessive tones need a warm-grey counterpart to
+    // stay visible on a light ground; the gold accent reads on either.
+    const isLight = resolvedTheme === 'light'
     const gold    = new THREE.MeshBasicMaterial({ color: 0xc8a96e, wireframe: true })
-    const dim     = new THREE.MeshBasicMaterial({ color: 0x2e2a1e, wireframe: true })
-    const mid     = new THREE.MeshBasicMaterial({ color: 0x4a4030, wireframe: true })
+    const dim     = new THREE.MeshBasicMaterial({ color: isLight ? 0xc9bfa4 : 0x2e2a1e, wireframe: true })
+    const mid     = new THREE.MeshBasicMaterial({ color: isLight ? 0xa89a76 : 0x4a4030, wireframe: true })
 
     const pwrMat  = new THREE.MeshBasicMaterial({ color: 0xc8a96e, transparent: true, opacity: 1.0 })
 
@@ -382,7 +389,7 @@ export default function WorkspaceScene() {
       renderer.dispose()
       if (mount.contains(renderer.domElement)) renderer.domElement.remove()
     }
-  }, [])
+  }, [resolvedTheme])
 
   return (
     <div

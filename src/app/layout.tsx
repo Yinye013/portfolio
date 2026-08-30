@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { DM_Sans, DM_Mono, Bebas_Neue } from 'next/font/google'
 import './globals.css'
 import SmoothScroll from '@/components/SmoothScroll'
+import ThemeProvider from '@/components/ThemeProvider'
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -34,7 +35,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${dmSans.variable} ${dmMono.variable} ${bebasNeue.variable} antialiased`} suppressHydrationWarning>
-        <SmoothScroll>{children}</SmoothScroll>
+        <ThemeProvider>
+          <SmoothScroll>{children}</SmoothScroll>
+        </ThemeProvider>
       </body>
     </html>
   )

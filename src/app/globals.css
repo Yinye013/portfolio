@@ -1,18 +1,162 @@
 @import "tailwindcss";
 @source "../";
 
-@theme {
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Theme palette.
+ *
+ * Every structural colour used by the sections lives here as a CSS variable so
+ * that light/dark mode is a single swap on <html>. `:root` holds the dark
+ * palette (the site's original look); `.light` overrides it.
+ *
+ * Naming: `--c-bg-*` surfaces, `--c-line-*` borders/rules, `--c-fg-*` text.
+ * Within each family the suffixes run from most to least contrast against the
+ * page background, so a token means the same thing in either theme.
+ */
+:root {
+  /* Theme crossfade timing, ported from countries-react-lemon.vercel.app,
+     whose entire mechanism is `* { transition: all .2s }`. Two findings from
+     that site drive these values:
+
+     200ms, not 400+. The swap should read as instant-but-soft. Slower than
+     ~250ms and you consciously watch it happen, which reads as sluggish
+     rather than smooth — and this palette swings further (#0a0a0a to #faf8f4)
+     than that site's (#23395d to #ecf0f1), so it needs a shorter duration to
+     feel equally quick, not a longer one.
+
+     Plain `ease`, not a custom curve. `ease` front-loads less than ease-out,
+     so the two palettes cross closer to the midpoint and neither end lingers.
+
+     Deliberately not redefined in `.light`, so the swap is symmetric. */
+  --theme-transition-duration: 200ms;
+  --theme-transition-ease: ease;
+
+  --c-bg: #0a0a0a;
+  --c-bg-deep: #080808;
+  --c-bg-surface: #0f0f0d;
+  --c-bg-raised: #0c0c0a;
+  --c-bg-scene: #080806;
+  --c-bg-media: #151513;
+  --c-bg-overlay: #000000;
+
+  --c-line: #1e1e1a;
+  --c-line-soft: #1a1a18;
+  --c-line-faint: #111111;
+  --c-line-strong: #2e2e28;
+  --c-line-pill: #242420;
+  --c-line-tag: #2a2a26;
+  --c-line-hover: #3a3a34;
+
+  --c-fg: #e8e4dc;
+  --c-fg-title: #d8d4cc;
+  --c-fg-role: #c8c4bc;
+  --c-fg-logo-dot: #b4ac9c;
+  --c-fg-body: #8a8a80;
+  --c-fg-body-soft: #7a7a70;
+  --c-fg-nav: #6a6a60;
+  --c-fg-muted: #5a5a52;
+  --c-fg-dim: #4a4a44;
+  --c-fg-faint: #3a3a34;
+  --c-fg-ghost: #2e2e28;
+  --c-fg-ghost-soft: #2a2a26;
+  --c-fg-outline: #1e1e1e;
+
+  --c-accent: #c8a96e;
+  --c-accent-hover: #d4b87a;
+  --c-accent-border: #c8a96e44;
+  --c-accent-selection: #c8a96e33;
+  --c-on-accent: #0a0a0a;
+
+  /* Three.js wireframe scene */
+  --c-scene-line: #c8a96e;
+  --c-scene-dim: #3a3a34;
+
+  color-scheme: dark;
+}
+
+.light {
+  --c-bg: #faf8f4;
+  --c-bg-deep: #f2efe8;
+  --c-bg-surface: #ffffff;
+  --c-bg-raised: #ffffff;
+  --c-bg-scene: #f2efe8;
+  --c-bg-media: #ebe7de;
+  --c-bg-overlay: #faf8f4;
+
+  --c-line: #ddd8cc;
+  --c-line-soft: #e3ded2;
+  --c-line-faint: #e8e3d8;
+  --c-line-strong: #c4bdae;
+  --c-line-pill: #d8d2c4;
+  --c-line-tag: #d2ccbe;
+  --c-line-hover: #a8a091;
+
+  --c-fg: #1a1a17;
+  --c-fg-title: #24241f;
+  --c-fg-role: #2e2e28;
+  --c-fg-logo-dot: #6a6256;
+  --c-fg-body: #4a4a44;
+  --c-fg-body-soft: #55554e;
+  --c-fg-nav: #6a6a60;
+  --c-fg-muted: #75756a;
+  --c-fg-dim: #85857a;
+  --c-fg-faint: #95958a;
+  --c-fg-ghost: #a5a598;
+  --c-fg-ghost-soft: #aaaa9d;
+  --c-fg-outline: #d5d0c2;
+
+  --c-accent: #8a6d2f;
+  --c-accent-hover: #755c26;
+  --c-accent-border: #8a6d2f55;
+  --c-accent-selection: #8a6d2f33;
+  --c-on-accent: #faf8f4;
+
+  --c-scene-line: #8a6d2f;
+  --c-scene-dim: #b5aea0;
+
+  color-scheme: light;
+}
+
+@theme inline {
   --font-sans: "DM Sans", sans-serif;
   --font-mono: "DM Mono", monospace;
   --font-display: "Bebas Neue", cursive;
 
-  --color-background: #0a0a0a;
-  --color-surface: #0f0f0d;
-  --color-border: #1e1e1a;
-  --color-text-primary: #e8e4dc;
-  --color-text-secondary: #8a8a80;
-  --color-text-muted: #5a5a52;
-  --color-accent: #c8a96e;
+  --color-background: var(--c-bg);
+  --color-bg-deep: var(--c-bg-deep);
+  --color-surface: var(--c-bg-surface);
+  --color-raised: var(--c-bg-raised);
+  --color-scene: var(--c-bg-scene);
+  --color-media: var(--c-bg-media);
+  --color-overlay: var(--c-bg-overlay);
+
+  --color-border: var(--c-line);
+  --color-border-soft: var(--c-line-soft);
+  --color-border-faint: var(--c-line-faint);
+  --color-border-strong: var(--c-line-strong);
+  --color-border-pill: var(--c-line-pill);
+  --color-border-tag: var(--c-line-tag);
+  --color-border-hover: var(--c-line-hover);
+
+  --color-text-primary: var(--c-fg);
+  --color-text-title: var(--c-fg-title);
+  --color-text-role: var(--c-fg-role);
+  --color-text-body: var(--c-fg-body);
+  --color-text-body-soft: var(--c-fg-body-soft);
+  --color-text-nav: var(--c-fg-nav);
+  --color-text-secondary: var(--c-fg-body);
+  --color-text-muted: var(--c-fg-muted);
+  --color-text-dim: var(--c-fg-dim);
+  --color-text-faint: var(--c-fg-faint);
+  --color-text-ghost: var(--c-fg-ghost);
+  --color-text-ghost-soft: var(--c-fg-ghost-soft);
+  --color-text-outline: var(--c-fg-outline);
+
+  --color-accent: var(--c-accent);
+  --color-accent-hover: var(--c-accent-hover);
+  --color-accent-border: var(--c-accent-border);
+  --color-on-accent: var(--c-on-accent);
 
   --breakpoint-sm: 500px;
   --breakpoint-md: 768px;
@@ -22,19 +166,55 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
-  background: #0a0a0a;
-  color: #e8e4dc;
+  background: var(--c-bg);
+  color: var(--c-fg);
   scroll-behavior: auto;
 }
 
+/* Theme crossfade.
+
+   Applied universally rather than to a list of tags: the palette reaches most
+   surfaces through Tailwind utilities (`bg-surface`) and inline `var(--c-line)`
+   borders, so a tag list always misses elements and they snap while the rest
+   eases — which is what made the swap look uneven.
+
+   The reference site uses `transition: all`, which is what makes every part of
+   its swap move as one. We cannot: GSAP drives transform, opacity and
+   clip-path on every section here, and `all` would put a competing CSS tween
+   on all of them — the pinned Projects and Skills timelines would smear on
+   every scroll. So this lists the properties a theme swap actually changes,
+   which is `all` minus the ones GSAP owns. Add to this list rather than
+   reaching for `all`; box-shadow and outline-color are here because the
+   reference animates its toggle's shadow, and fill/stroke because its sun and
+   moon SVGs recolour with the page. */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke,
+    box-shadow, outline-color, text-decoration-color;
+  transition-duration: var(--theme-transition-duration);
+  transition-timing-function: var(--theme-transition-ease);
+}
+
+/* Elements GSAP drives directly opt out, so a theme swap never adds a
+   competing tween to something mid-animation. Add `data-theme-instant` to any
+   element whose colours GSAP tweens itself — ThemeToggle's icons are already
+   safe, since GSAP animates their opacity/transform rather than fill. */
+[data-theme-instant],
+[data-theme-instant] *,
+img,
+canvas {
+  transition-property: none;
+}
+
 ::selection {
-  background: #c8a96e33;
-  color: #e8e4dc;
+  background: var(--c-accent-selection);
+  color: var(--c-fg);
 }
 
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #0a0a0a; }
-::-webkit-scrollbar-thumb { background: #1e1e1a; }
+::-webkit-scrollbar-track { background: var(--c-bg); }
+::-webkit-scrollbar-thumb { background: var(--c-line); }
 
 .clip-hidden { clip-path: inset(0 100% 0 0); }
 .clip-visible { clip-path: inset(0 0% 0 0); }
