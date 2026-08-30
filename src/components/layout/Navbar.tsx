@@ -73,6 +73,22 @@ function HireMe({ className = '' }: { className?: string }) {
   )
 }
 
+/**
+ * CV download. The file lives in `public/`, so it is served from the site root;
+ * `download` gives the saved file a clean name rather than the hashed path.
+ */
+function Resume({ className = '' }: { className?: string }) {
+  return (
+    <a
+      href="/onyinyechukwu-adesanya-cv.pdf"
+      download="Onyinyechukwu-Adesanya-CV.pdf"
+      className={`font-mono text-[12px] tracking-[0.12em] uppercase text-text-nav border border-border py-[6px] px-[14px] bg-transparent hover:text-accent hover:border-accent-border transition-colors duration-150 ${className}`}
+    >
+      Résumé
+    </a>
+  )
+}
+
 function NavContent() {
   return (
     <>
@@ -81,6 +97,7 @@ function NavContent() {
       <TabletLinks />
       <div className="flex items-center gap-3">
         <ThemeToggle />
+        {/* <Resume className="hidden md:inline-flex" /> */}
         <HireMe className="hidden md:inline-flex" />
       </div>
     </>
@@ -99,16 +116,24 @@ export default function Navbar() {
     if (!nav) return
 
     // GSAP tweens concrete colours, so the palette has to be resolved rather
-    // than passed as var(). Resolve it inside onEnter, not out here: this
-    // effect re-runs on a theme flip, but next-themes writes the class on
-    // <html> in the same commit that schedules the effect, so a read at this
-    // point still returns the outgoing theme's values.
-    // On a theme flip this effect re-runs while the user may already be
-    // scrolled past the trigger point, where onEnter will not fire again. Paint
-    // the correct state for the current scroll position directly, on the next
-    // frame so the new class is on <html> before the palette is read.
-    const raf = requestAnimationFrame(() => {
+    // than passed as var(). `themeColor` reads the custom properties off
+    // <html>, which update synchronously with the class next-themes sets, so
+    // reading at effect time returns the incoming theme's values.
+    //
+    // This effect re-runs on every theme flip. The problem it has to solve:
+    // ScrollTrigger's onEnter/onLeaveBack only fire on a *crossing*, so when
+    // the user flips the theme while already scrolled past the trigger point,
+    // nothing repaints the nav and it keeps the previous palette's colours
+    // baked into its inline style until the user scrolls up and back down.
+    //
+    // So paint the correct state for the CURRENT scroll position explicitly on
+    // every run, and do it after the trigger exists so the trigger's own
+    // initial refresh cannot overwrite it. `gsap.set` (not `to`) and killing
+    // in-flight tweens first, so a half-finished 0.3s colour tween from a
+    // previous crossing cannot land on the old target afterwards.
+    const paint = () => {
       const scrolled = window.scrollY >= 60
+      gsap.killTweensOf(nav)
       gsap.set(nav, {
         backgroundColor: scrolled ? themeColor('--c-bg') : 'transparent',
         borderBottomColor: scrolled ? themeColor('--c-line') : 'transparent',
@@ -116,9 +141,9 @@ export default function Navbar() {
         y: scrolled ? 0 : -8,
         pointerEvents: scrolled ? 'auto' : 'none',
       })
-    })
+    }
 
-    ScrollTrigger.create({
+    const trigger = ScrollTrigger.create({
       start: 60,
       onEnter: () => {
         gsap.to(nav, {
@@ -134,11 +159,20 @@ export default function Navbar() {
       },
     })
 
+    // next-themes updates its React state (and so re-runs this effect) in the
+    // same commit that writes the class onto <html>, but the DOM write lands
+    // after this effect body runs. Reading the palette here would therefore
+    // return the OUTGOING theme's values and leave the nav one flip behind, so
+    // defer the paint by a frame — by then the class is on <html> and the
+    // custom properties resolve to the incoming theme.
+    const raf = requestAnimationFrame(paint)
+
     return () => {
       cancelAnimationFrame(raf)
-      ScrollTrigger.getAll()
-        .filter((t) => !t.vars.trigger)
-        .forEach((t) => t.kill())
+      // Kill only this effect's own trigger. `ScrollTrigger.getAll()` is global,
+      // so filtering by `!t.vars.trigger` would also take out any other
+      // section's start-offset trigger — see the note in CLAUDE.md.
+      trigger.kill()
     }
   }, [resolvedTheme])
 
@@ -218,11 +252,15 @@ export default function Navbar() {
         {/* Overlay top bar */}
         <div className="flex items-center justify-between py-[18px] px-7 border-b border-border-faint">
           <Logo />
+          {/* Drawn from two 1px bars rather than an icon-font glyph, so it
+              carries the same hairline weight as the hamburger it replaces. */}
           <button
             onClick={() => setIsOpen(false)}
-            className="font-mono text-[9px] tracking-[0.14em] uppercase text-text-dim cursor-pointer"
+            aria-label="Close menu"
+            className="relative grid place-items-center w-6 h-6 cursor-pointer text-text-dim hover:text-text-primary transition-colors duration-150"
           >
-            ✕ Close
+            <span className="col-start-1 row-start-1 block w-5 h-px bg-current rotate-45" />
+            <span className="col-start-1 row-start-1 block w-5 h-px bg-current -rotate-45" />
           </button>
         </div>
 
@@ -265,9 +303,13 @@ export default function Navbar() {
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <span className="font-mono text-[8px] tracking-[0.1em] text-text-ghost">
-              yinadesanya@gmail.com
-            </span>
+            {/* <a
+              href="/onyinyechukwu-adesanya-cv.pdf"
+              download="Onyinyechukwu-Adesanya-CV.pdf"
+              className="font-mono text-[8px] tracking-[0.1em] uppercase text-text-ghost hover:text-accent transition-colors duration-150"
+            >
+              Résumé
+            </a> */}
             <ThemeToggle />
           </div>
         </div>

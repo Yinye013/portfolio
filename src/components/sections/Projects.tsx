@@ -219,7 +219,16 @@ export default function Projects() {
                 style={{ borderBottom: "0.5px solid var(--c-line)" }}
               >
                 <div ref={(el) => { cardImageRefs.current[idx] = el; }} className="w-full h-full relative">
-                  <Image src={project.imageUrl} alt={project.title} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+                  <Image
+                    src={project.imageUrl}
+                    alt={project.title}
+                    fill
+                    // Cards are full-width on mobile and half-width from `sm:` up.
+                    // Without this, next/image assumes 100vw and serves a needlessly
+                    // large variant.
+                    sizes="(max-width: 500px) 100vw, 50vw"
+                    className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  />
                 </div>
               </div>
               <CardBody project={project} />

@@ -1,4 +1,4 @@
-const stack = ["Next.js", "Contentful", "GSAP"] as const;
+// const stack = ["Next.js", "Contentful", "GSAP"] as const;
 
 export default function Footer() {
   return (
@@ -6,7 +6,7 @@ export default function Footer() {
       <span className="font-mono text-[12px] tracking-[0.12em] uppercase text-text-faint">
         © 2025 Onyinyechukwu Adesanya
       </span>
-
+      {/* 
       <div className="flex items-center">
         {stack.map((item, i) => (
           <span
@@ -18,7 +18,7 @@ export default function Footer() {
             {item}
           </span>
         ))}
-      </div>
+      </div> */}
     </footer>
   );
 }
