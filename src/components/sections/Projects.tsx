@@ -80,6 +80,9 @@ export default function Projects() {
   const cardsContainerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
   const cardImageRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // High-water mark of the pinned timeline, so it only ever moves forward.
+  // Declared outside the effect so it survives a matchMedia rebuild.
+  const maxProgressRef = useRef(0);
 
   useEffect(() => {
     const mm = gsap.matchMedia();
@@ -87,22 +90,16 @@ export default function Projects() {
     mm.add("(min-width: 1024px)", () => {
       if (!sectionRef.current || !cardsContainerRef.current) return;
 
-      // The single source of truth for the hidden state. The scrubbed tweens
-      // below are plain `to`s, so ScrollTrigger records these as the start
-      // values and restores them when the pin is scrubbed back to 0.
+      // The single source of truth for the hidden state. The tweens below are
+      // plain `to`s over it, never `fromTo`s — see the note on the card JSX.
       const cards = cardRefs.current.filter(Boolean) as HTMLElement[];
       gsap.set(cards, { x: "100vw", opacity: 0, clipPath: "inset(0 100% 0 0)" });
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "center center",
-          end: () => `+=${projects.length * 600}`,
-          pin: true,
-          scrub: 1,
-          anticipatePin: 1,
-        },
-      });
+      // Built paused and driven by hand from the trigger's onUpdate rather than
+      // handed to ScrollTrigger via `scrollTrigger:` with a `scrub`. A scrub
+      // runs the timeline backwards on the way up, which is exactly what we do
+      // not want: once a card has landed it stays landed until a reload.
+      const tl = gsap.timeline({ paused: true });
 
       // Drifts across the whole pin, so it spans the normalised timeline.
       if (headingRef.current) tl.to(headingRef.current, { x: -40, duration: 1, ease: "none" }, 0);
@@ -112,7 +109,7 @@ export default function Projects() {
       // overlap instead of landing one fully-settled card at a time. The
       // timeline is normalised to 1 unit total, and the final card has to
       // finish inside it — hence the explicit duration rather than GSAP's 0.5s
-      // default, which would overrun the scrub window as the list grows.
+      // default, which would overrun the pin window as the list grows.
       const slice = 1 / projects.length;
       const duration = slice * 1.25;
       cards.forEach((card, i) => {
@@ -125,6 +122,25 @@ export default function Projects() {
       });
       // Hold the pin briefly after the last card settles.
       tl.to({}, { duration: slice * 0.25 });
+
+      // Restore whatever the timeline had already reached before this rebuild,
+      // so a matchMedia re-run cannot un-land cards that had landed.
+      if (maxProgressRef.current > 0) tl.progress(maxProgressRef.current);
+
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "center center",
+        end: () => `+=${projects.length * 600}`,
+        pin: true,
+        anticipatePin: 1,
+        onUpdate: (self) => {
+          if (self.progress <= maxProgressRef.current) return;
+          maxProgressRef.current = self.progress;
+          // The short tween stands in for what `scrub: 1` used to do, so the
+          // motion still reads as scroll-linked rather than snapping.
+          gsap.to(tl, { progress: self.progress, duration: 0.4, ease: "power2.out", overwrite: true });
+        },
+      });
 
       cardImageRefs.current.forEach((img) => {
         if (!img) return;
@@ -192,7 +208,11 @@ export default function Projects() {
       </div>
 
       {/* Cards */}
-      <div ref={cardsContainerRef} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {/* overflow-x-clip contains the desktop pin's parked cards, which sit at
+          x: 100vw before they fly in and otherwise widen the whole document.
+          `clip` rather than `hidden` so the vertical axis stays `visible` — and
+          it goes here rather than on the <section>, which is the pinned element. */}
+      <div ref={cardsContainerRef} className="grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-x-clip">
         {projects.map((project, idx) => {
           // A project without a live URL yet renders as a plain card so it
           // doesn't open an empty tab. "" is treated the same as "#" — an

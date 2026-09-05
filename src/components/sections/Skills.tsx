@@ -60,6 +60,10 @@ export default function Skills() {
   const categoryRefs  = useRef<(HTMLDivElement | null)[]>([]);
   const dropZoneRef   = useRef<HTMLDivElement>(null);
   const droppedIconRefs = useRef<(HTMLDivElement | null)[][]>(skillGroups.map(() => []));
+  // High-water mark of the pinned timeline, so it only ever moves forward.
+  // Declared outside the effect deliberately: this effect re-runs on every
+  // theme flip, and a mark reset there would re-hide icons that had landed.
+  const maxProgressRef = useRef(0);
   const { resolvedTheme } = useTheme();
 
   useEffect(() => {
@@ -113,9 +117,10 @@ export default function Skills() {
       const totalIconSkills = skillGroups.reduce((sum, g) => sum + g.skills.length, 0);
       const scrollDistance = totalIconSkills * 100;
 
-      const tl = gsap.timeline({
-        scrollTrigger: { trigger: sectionRef.current, start: "center center", end: `+=${scrollDistance}`, pin: true, scrub: 0.8, anticipatePin: 1 },
-      });
+      // Paused and driven by hand from the trigger's onUpdate below, rather
+      // than scrubbed. A scrub runs backwards on the way up and lifts every
+      // icon back out; once an icon has dropped it stays down until a reload.
+      const tl = gsap.timeline({ paused: true });
 
       let cursor = 0;
       skillGroups.forEach((group, gi) => {
@@ -130,6 +135,26 @@ export default function Skills() {
           tl.to(el, { opacity: 1, y: 0, duration: 0.3, ease: "bounce.out" }, cursor / totalIconSkills);
           cursor++;
         });
+      });
+
+      // Restore the position reached before this rebuild. Without it, flipping
+      // the theme below this section would blank every dropped icon, since the
+      // gsap.set above has just re-hidden them all.
+      if (maxProgressRef.current > 0) tl.progress(maxProgressRef.current);
+
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "center center",
+        end: `+=${scrollDistance}`,
+        pin: true,
+        anticipatePin: 1,
+        onUpdate: (self) => {
+          if (self.progress <= maxProgressRef.current) return;
+          maxProgressRef.current = self.progress;
+          // Stands in for what `scrub: 0.8` used to do, so the drop still reads
+          // as scroll-linked rather than snapping to position.
+          gsap.to(tl, { progress: self.progress, duration: 0.4, ease: "power2.out", overwrite: true });
+        },
       });
 
       return () => {};

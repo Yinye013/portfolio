@@ -119,9 +119,9 @@
 }
 
 @theme inline {
-  --font-sans: "DM Sans", sans-serif;
-  --font-mono: "DM Mono", monospace;
-  --font-display: "Bebas Neue", cursive;
+  --font-sans: var(--font-dm-sans), "DM Sans", sans-serif;
+  --font-mono: var(--font-dm-mono), "DM Mono", monospace;
+  --font-display: var(--font-bebas), "Bebas Neue", sans-serif;
 
   --color-background: var(--c-bg);
   --color-bg-deep: var(--c-bg-deep);
@@ -169,6 +169,18 @@ html {
   background: var(--c-bg);
   color: var(--c-fg);
   scroll-behavior: auto;
+}
+
+/* Backstop against a horizontal scrollbar. The real offenders are clipped at
+   their own container (see the Projects card grid, whose cards are parked a
+   viewport to the right before the pin runs); this catches the small ones, like
+   the magnetic-hover buttons in Hero and Contact translating a few px.
+
+   `clip`, never `hidden`: `overflow-x: hidden` computes `overflow-y` to `auto`,
+   which makes body a scroll container and breaks both Lenis and ScrollTrigger's
+   pinning. `clip` leaves the vertical axis `visible`. */
+body {
+  overflow-x: clip;
 }
 
 /* Theme crossfade.

@@ -3,8 +3,20 @@
 export default function Footer() {
   return (
     <footer className="flex flex-col sm:flex-row items-center sm:justify-between gap-1 sm:gap-0 py-[18px] px-5 sm:px-7 border-t-[0.5px] border-border-faint text-center sm:text-left">
-      <span className="font-mono text-[12px] tracking-[0.12em] uppercase text-text-faint">
-        © 2025 Onyinyechukwu Adesanya
+      {/* suppressHydrationWarning: the year is read at prerender and again at
+          hydration, so the two disagree for anyone loading the page across a New
+          Year boundary on a build made the previous year. */}
+      <span
+        suppressHydrationWarning
+        className="font-mono text-[12px] tracking-[0.12em] uppercase text-text-faint"
+      >
+        © {new Date().getFullYear()} Onyinyechukwu Adesanya
+      </span>
+      {/* Analytics disclosure. The site records approximate visit location and
+          browser; saying so is what makes that collection defensible, and the
+          tracker honours Do Not Track. */}
+      <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-text-ghost">
+        Anonymous visit stats collected · Do Not Track respected
       </span>
       {/* 
       <div className="flex items-center">
