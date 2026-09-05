@@ -4,7 +4,6 @@ import './globals.css'
 import SmoothScroll from '@/components/SmoothScroll'
 import ThemeProvider from '@/components/ThemeProvider'
 import Preloader from '@/components/Preloader'
-import VisitTracker from '@/components/VisitTracker'
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -151,8 +150,6 @@ export default function RootLayout({
             flip, and it needs no Lenis context. position:fixed + z-index put it
             above the Navbar's own fixed bar regardless of DOM order. */}
         <Preloader />
-        {/* Renders nothing; fires one analytics beacon per tab. */}
-        <VisitTracker />
         <ThemeProvider>
           <SmoothScroll>{children}</SmoothScroll>
         </ThemeProvider>
