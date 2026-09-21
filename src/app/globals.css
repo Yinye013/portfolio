@@ -198,8 +198,20 @@ body {
    which is `all` minus the ones GSAP owns. Add to this list rather than
    reaching for `all`; box-shadow and outline-color are here because the
    reference animates its toggle's shadow, and fill/stroke because its sun and
-   moon SVGs recolour with the page. */
-*,
+   moon SVGs recolour with the page.
+
+   <img> is excluded, and is deliberately NOT in the opt-out list below. This
+   rule is unlayered, so it outranks Tailwind's layered utilities: listing
+   images made `transition-property: none` win over the project cards'
+   `transition-transform duration-500`, and the `group-hover:scale-105` hover
+   snapped instead of easing. Images carry no themed colour, so they lose
+   nothing by sitting out the crossfade.
+
+   The exclusion is `:where(img)`, never `:not(img)`. `:not()` takes the
+   specificity of its argument, so `*:not(img)` would be (0,1,0) — enough to
+   beat the very utilities this is meant to leave alone, which silently kills
+   the scale. `:where()` is always (0,0,0), keeping this at the `*` it replaced. */
+*:not(:where(img)),
 *::before,
 *::after {
   transition-property: background-color, border-color, color, fill, stroke,
@@ -214,7 +226,6 @@ body {
    safe, since GSAP animates their opacity/transform rather than fill. */
 [data-theme-instant],
 [data-theme-instant] *,
-img,
 canvas {
   transition-property: none;
 }
