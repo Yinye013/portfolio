@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
+import { createForwardPin } from "@/lib/forwardPin";
 
 const projects = [
   {
@@ -83,6 +84,9 @@ export default function Projects() {
   // High-water mark of the pinned timeline, so it only ever moves forward.
   // Declared outside the effect so it survives a matchMedia rebuild.
   const maxProgressRef = useRef(0);
+  // Whether the pin has already collapsed. Outside the effect for the same
+  // reason as maxProgressRef: once it is gone it must never come back.
+  const pinCollapsedRef = useRef(false);
 
   useEffect(() => {
     const mm = gsap.matchMedia();
@@ -127,19 +131,15 @@ export default function Projects() {
       // so a matchMedia re-run cannot un-land cards that had landed.
       if (maxProgressRef.current > 0) tl.progress(maxProgressRef.current);
 
-      ScrollTrigger.create({
+      // Drives `tl` forward only, then removes its own pin once every card has
+      // landed — otherwise the section keeps eating its full pinned distance on
+      // every later pass with nothing left to animate.
+      createForwardPin({
         trigger: sectionRef.current,
-        start: "center center",
-        end: () => `+=${projects.length * 600}`,
-        pin: true,
-        anticipatePin: 1,
-        onUpdate: (self) => {
-          if (self.progress <= maxProgressRef.current) return;
-          maxProgressRef.current = self.progress;
-          // The short tween stands in for what `scrub: 1` used to do, so the
-          // motion still reads as scroll-linked rather than snapping.
-          gsap.to(tl, { progress: self.progress, duration: 0.4, ease: "power2.out", overwrite: true });
-        },
+        distance: projects.length * 600,
+        timeline: tl,
+        maxProgress: maxProgressRef,
+        collapsed: pinCollapsedRef,
       });
 
       cardImageRefs.current.forEach((img) => {

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { createForwardPin } from "@/lib/forwardPin";
 import { themeColor } from "@/lib/theme";
 import {
   SiReact, SiNextdotjs, SiVuedotjs, SiAngular, SiGreensock, SiTypescript,
@@ -64,6 +65,10 @@ export default function Skills() {
   // Declared outside the effect deliberately: this effect re-runs on every
   // theme flip, and a mark reset there would re-hide icons that had landed.
   const maxProgressRef = useRef(0);
+  // Whether the pin has already collapsed. Persistent for the same reason as
+  // maxProgressRef — and doubly so here, since this effect re-runs on every
+  // theme flip and must not rebuild a pin it has already removed.
+  const pinCollapsedRef = useRef(false);
   const { resolvedTheme } = useTheme();
 
   useEffect(() => {
@@ -142,19 +147,17 @@ export default function Skills() {
       // gsap.set above has just re-hidden them all.
       if (maxProgressRef.current > 0) tl.progress(maxProgressRef.current);
 
-      ScrollTrigger.create({
+      // Drives `tl` forward only, then removes its own pin once every icon has
+      // dropped. Note this sits *after* the timeline build and the progress
+      // seed above: when the pin has already collapsed the helper no-ops, but
+      // the timeline still has to be built and seeded, because the gsap.set
+      // above has just re-hidden every icon on this theme flip.
+      createForwardPin({
         trigger: sectionRef.current,
-        start: "center center",
-        end: `+=${scrollDistance}`,
-        pin: true,
-        anticipatePin: 1,
-        onUpdate: (self) => {
-          if (self.progress <= maxProgressRef.current) return;
-          maxProgressRef.current = self.progress;
-          // Stands in for what `scrub: 0.8` used to do, so the drop still reads
-          // as scroll-linked rather than snapping to position.
-          gsap.to(tl, { progress: self.progress, duration: 0.4, ease: "power2.out", overwrite: true });
-        },
+        distance: scrollDistance,
+        timeline: tl,
+        maxProgress: maxProgressRef,
+        collapsed: pinCollapsedRef,
       });
 
       return () => {};
