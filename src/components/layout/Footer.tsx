@@ -12,13 +12,7 @@ export default function Footer() {
       >
         © {new Date().getFullYear()} Onyinyechukwu Adesanya
       </span>
-      {/* Analytics disclosure. The site records approximate visit location and
-          browser; saying so is what makes that collection defensible, and the
-          tracker honours Do Not Track. */}
-      <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-text-ghost">
-        Anonymous visit stats collected · Do Not Track respected
-      </span>
-      {/* 
+      {/*
       <div className="flex items-center">
         {stack.map((item, i) => (
           <span
